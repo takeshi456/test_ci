@@ -56,4 +56,4 @@ workflows:
             - test-image
           filters:
             branches:
-              only: master
+              only: main

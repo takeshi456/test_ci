@@ -16,8 +16,16 @@ jobs:
           name: Start containers
           working_directory: builds
           command: docker run -itd --name ${NAME} -p ${PORT}:8000 ${IMAGE} sh
+      - run:
+          name: Integration test
+          command: |
+            for i in [0..10]; do
+              curl http://localhost:8000
+              [[ $? -eq 0 ]] && { exit 0; } 
+            done
+            exit 1
   push-image:
-    machine:
+    machine: 
       image: ubuntu-2004:202010-01
     environment:
       - BUILDX: https://github.com/docker/buildx/releases/download/v0.5.1/buildx-v0.5.1.linux-amd64

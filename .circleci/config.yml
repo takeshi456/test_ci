@@ -16,16 +16,16 @@ jobs:
           name: Start containers
           working_directory: builds
           command: docker run -itd --name ${NAME} -p ${PORT}:8000 ${IMAGE} sh
-      - run:
-          name: Integration test
-          command: |
-            set +e
-            for i in [0..10]; do
-              curl http://localhost:8000
-              [[ $? -eq 0 ]] && { exit 0; } 
-              sleep 3
-            done
-            exit 1
+          #- run:
+          #name: Integration test
+          #command: |
+          #set +e
+          #for i in [0..10]; do
+          #curl http://localhost:8000
+          # [[ $? -eq 0 ]] && { exit 0; } 
+          # sleep 3
+          # done
+          # exit 1
   push-image:
     machine: 
       image: ubuntu-2004:202010-01

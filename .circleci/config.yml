@@ -1,4 +1,11 @@
 version: 2.1
+executors:
+  awscli:
+    docker:
+      - image: amazon/aws-cli
+    environment:
+      AWS_DEFAULT_REGION: ap-northeast-1
+      AWS_PAGER: ""
 jobs:
   test-image:
     machine: true
@@ -56,6 +63,16 @@ jobs:
           name: Build and Push docker image to Docker Hub
           working_directory: docker
           command: docker buildx build --platform linux/amd64,linux/arm64 -t ${IMAGE} --push .
+  deploy:
+    executor: awscli
+    steps:
+      - run:
+          name: Deploy containers
+          command: |
+            aws ssm send-command \
+              --targets Key=tag:Deploy,Values=test \
+              --document-name 'AWS-RunShellScript' \
+              --parameters 'commands=/home/ec2-user/deploy.sh'
 workflows:
   version: 2.1
   django-pipeline:
@@ -67,3 +84,6 @@ workflows:
           filters:
             branches:
               only: main
+      - deploy:
+          requires:
+            - push-image
